@@ -23,8 +23,8 @@
         {% for opp in opportunities %}
         <tr>
             <td>{{ opp.symbol }}</td>
-            <td>{{ opp.buy_at }}</td>
-            <td>{{ opp.sell_at }}</td>
+            <td>{{ opp.buy_exchange }}</td>
+            <td>{{ opp.sell_exchange }}</td>
             <td>{{ "%.4f"|format(opp.buy_price) }}</td>
             <td>{{ "%.4f"|format(opp.sell_price) }}</td>
             <td class="{{ 'text-success' if opp.spread > 0 else 'text-danger' }}">
