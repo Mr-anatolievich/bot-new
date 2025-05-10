@@ -1,0 +1,12 @@
+flask
+python-binance
+pybit
+requests
+python-dotenv
+pybase64
+python-kucoin
+gate-api
+huobi
+mexc-api
+python-bitget
+

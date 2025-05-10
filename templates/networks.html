@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Мережі та комісії | Арбітражний бот{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Мережі та комісії для криптовалют</h1>
+
+    <div class="filter-container">
+        <label for="token-filter" class="filter-label">Токен:</label>
+        <select id="token-filter">
+            <option value="">Всі токени</option>
+            {% for token in tokens %}
+            <option value="{{ token }}">{{ token }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="network-filter" class="filter-label">Мережа:</label>
+        <select id="network-filter">
+            <option value="">Всі мережі</option>
+            {% for network in networks %}
+            <option value="{{ network }}">{{ network }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="table-responsive">
+        <table class="networks-table">
+            <thead>
+            <tr>
+                <th>Токен</th>
+                <th>Біржа</th>
+                <th>Мережа</th>
+                <th>Комісія виведення</th>
+                <th>Депозит</th>
+                <th>Виведення</th>
+            </tr>
+            </thead>
+            <tbody id="networks-table-body">
+            {% for row in networks_data %}
+            <tr class="network-row" data-token="{{ row.token }}" data-network="{{ row.network }}">
+                <td>{{ row.token }}</td>
+                <td>
+                    <div class="exchange-cell">
+                            <span class="exchange-label">
+                                <img src="/static/{{ row.exchange|lower }}.svg" class="exchange-icon" alt="{{ row.exchange }}">
+                                {{ row.exchange }}
+                            </span>
+                    </div>
+                </td>
+                <td>{{ row.network }}</td>
+                <td>{{ row.fee }}</td>
+                <td>{{ "Так" if row.deposit else "Ні" }}</td>
+                <td>{{ "Так" if row.withdraw else "Ні" }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Фільтрація по токену
+    document.getElementById('token-filter').addEventListener('change', filterNetworks);
+    document.getElementById('network-filter').addEventListener('change', filterNetworks);
+
+    function filterNetworks() {
+        const selectedToken = document.getElementById('token-filter').value;
+        const selectedNetwork = document.getElementById('network-filter').value;
+        const rows = document.querySelectorAll('.network-row');
+
+        rows.forEach(row => {
+            const rowToken = row.getAttribute('data-token');
+            const rowNetwork = row.getAttribute('data-network');
+
+            const tokenMatch = selectedToken === '' || rowToken === selectedToken;
+            const networkMatch = selectedNetwork === '' || rowNetwork === selectedNetwork;
+
+            if (tokenMatch && networkMatch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}

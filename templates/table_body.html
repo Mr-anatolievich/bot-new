@@ -1,0 +1,31 @@
+<tbody>
+{% for row in table %}
+<tr>
+    <td>{{ row.pair }}</td>
+    <td>
+        <span class="exchange-label">
+            <img src="{{ url_for('static', filename=row.buy_exchange|lower|replace('.', '') + '.svg') }}" alt="{{ row.buy_exchange }}" class="exchange-icon">
+            {{ row.buy_exchange }}
+        </span>
+        <span class="exchange-value">{{ "%.6f"|format(row.buy_price) }}</span>
+    </td>
+    <td>
+        <span class="exchange-label">
+            <img src="{{ url_for('static', filename=row.sell_exchange|lower|replace('.', '') + '.svg') }}" alt="{{ row.sell_exchange }}" class="exchange-icon">
+            {{ row.sell_exchange }}
+        </span>
+        <span class="exchange-value">{{ "%.6f"|format(row.sell_price) }}</span>
+    </td>
+    <td>
+        <span class="{% if row.spread > 0 %}positive{% elif row.spread < 0 %}negative{% endif %}">
+            {{ '+' if row.spread > 0 else '' }}{{ '%.2f'|format(row.spread) }}%
+        </span>
+    </td>
+    <td>
+        {% for net in row.networks %}
+        <span class="network-badge">{{ net.label }}</span>
+        {% endfor %}
+    </td>
+</tr>
+{% endfor %}
+</tbody>

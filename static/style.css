@@ -1,0 +1,313 @@
+body {
+    background: #181a20;
+    color: #eaecef;
+    font-family: 'Inter', 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    color: #f7c331;
+    text-align: left;
+    font-size: 1.3rem;
+    margin: 28px 0 20px 28px;
+    letter-spacing: 0.02em;
+    font-weight: 700;
+}
+
+.sidebar {
+    width: 220px;
+    background: #1e2128;
+    position: fixed;
+    height: 100%;
+    top: 0;
+    left: 0;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.sidebar-logo {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 0 15px;
+}
+
+.sidebar-logo h2 {
+    color: #f7c331;
+    font-size: 1.2rem;
+    margin: 10px 0;
+}
+
+.menu-item {
+    padding: 12px 20px;
+    color: #b4bbc7;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-left: 4px solid transparent;
+    display: flex;
+    align-items: center;
+}
+
+.menu-item:hover {
+    background: #22242c;
+    color: #f7c331;
+}
+
+.menu-item.active {
+    background: #22242c;
+    border-left: 4px solid #f7c331;
+    color: #f7c331;
+    font-weight: 600;
+}
+
+.menu-icon {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    justify-content: center;
+}
+
+.main-content {
+    margin-left: 220px;
+    padding: 15px 20px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.tokens-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #23272f;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+    font-size: 1.01rem;
+}
+
+th, td {
+    padding: 13px 16px;
+    text-align: center;
+    border-bottom: 1px solid #23272f;
+    border-right: 1px solid #222;
+    vertical-align: middle;
+    min-width: 90px;
+}
+
+th {
+    background: #1e2128;
+    color: #b4bbc7;
+    font-weight: 700;
+    font-size: 1.01rem;
+    border-top: 1px solid #23272f;
+    border-bottom: 2px solid #23272f;
+    letter-spacing: 0.01em;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr {
+    transition: background 0.2s;
+}
+
+tr:hover {
+    background: #22242c;
+}
+
+.positive {
+    color: #00ff8f;
+    font-weight: 700;
+}
+
+.negative {
+    color: #ff4d4f;
+    font-weight: 700;
+}
+
+.network-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.network-badge {
+    display: inline-block;
+    padding: 3px 14px;
+    border-radius: 16px;
+    font-size: 0.95em;
+    font-weight: 600;
+    background: transparent;
+    border: 1.5px solid #f7c331;
+    color: #f7c331;
+    letter-spacing: 0.01em;
+}
+
+.exchange-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+    flex-wrap: wrap;
+}
+
+.tab {
+    padding: 10px 20px;
+    margin-right: 5px;
+    cursor: pointer;
+    border-radius: 4px 4px 0 0;
+    background: #23272f;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tab:hover {
+    background: #2a2f38;
+}
+
+.tab.active {
+    background: #2a2f38;
+    border-bottom: 3px solid #f7c331;
+}
+
+.tab img {
+    width: 18px;
+    height: 18px;
+}
+
+.exchange-panel {
+    display: none;
+}
+
+.exchange-panel.active {
+    display: block;
+}
+
+.exchanges-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+    padding: 0 0 10px 0;
+    background: none;
+    border-radius: 0;
+}
+.exchange-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 15px;
+    background: #23272f;
+    border-radius: 6px;
+    margin-bottom: 6px;
+}
+.exchange-badge img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.auto-refresh-filter {
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.auto-refresh-filter select,
+#refresh-interval-tokens {
+    background: #1e2128;
+    color: #f7c331;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 1rem;
+}
+
+.exchange-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 110px;
+}
+.exchange-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.97em;
+    font-weight: 700;
+    color: #eaecef;
+    margin-bottom: 2px;
+    letter-spacing: 0.01em;
+}
+.exchange-icon {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    margin-right: 6px;
+    border-radius: 4px;
+    background: #23272f;
+}
+.exchange-value {
+    font-size: 1.09em;
+    font-weight: 600;
+    color: #f1f1f1;
+    margin-top: 2px;
+    letter-spacing: 0.01em;
+}
+
+.network-info {
+    margin: 3px 0;
+    display: flex;
+    align-items: center;
+}
+
+.exchange-icon-small {
+    width: 16px;
+    margin-right: 5px;
+}
+
+
+@media (max-width: 900px) {
+    .sidebar {
+        width: 60px;
+        padding-top: 10px;
+    }
+    .main-content {
+        margin-left: 60px;
+        padding: 8px 4px;
+    }
+    .sidebar-logo h2,
+    .menu-item span:not(.menu-icon) {
+        display: none;
+    }
+    .menu-item {
+        justify-content: center;
+        padding: 10px 0;
+    }
+    th, td {
+        padding: 8px 6px;
+        font-size: 0.97rem;
+        min-width: 70px;
+    }
+    .network-badge {
+        padding: 2px 8px;
+        font-size: 0.85em;
+    }
+    .tab {
+        padding: 8px 8px;
+        font-size: 0.95em;
+    }
+}

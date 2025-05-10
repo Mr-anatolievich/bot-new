@@ -1,0 +1,26 @@
+<table class="tokens-table">
+    <thead>
+    <tr>
+        <th>Токен</th>
+        <th>Ціна купівлі (Bid)</th>
+        <th>Ціна продажу (Ask)</th>
+        <th>Обʼєм (24h)</th>
+        <th>Мережі</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for token in tokens %}
+    <tr>
+        <td>{{ token.symbol }}</td>
+        <td>{{ "%.6f"|format(token.bid) }}</td>
+        <td>{{ "%.6f"|format(token.ask) }}</td>
+        <td>{{ token.volume|humanize }}</td>
+        <td class="network-list">
+            {% for net in token.networks %}
+            <span class="network-badge">{{ net.label }}</span>
+            {% endfor %}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

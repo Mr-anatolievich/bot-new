@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Арбітражні можливості</h2>
+
+    <div class="alert alert-info">
+        Показуються лише можливості з прибутком > 0.1% (після комісій)
+    </div>
+
+    <table class="table table-hover">
+        <thead class="table-dark">
+        <tr>
+            <th>Монета</th>
+            <th>Купити на</th>
+            <th>Продати на</th>
+            <th>Ціна купівлі</th>
+            <th>Ціна продажу</th>
+            <th>Прибуток (%)</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for opp in opportunities %}
+        <tr>
+            <td>{{ opp.symbol }}</td>
+            <td>{{ opp.buy_at }}</td>
+            <td>{{ opp.sell_at }}</td>
+            <td>{{ "%.4f"|format(opp.buy_price) }}</td>
+            <td>{{ "%.4f"|format(opp.sell_price) }}</td>
+            <td class="{{ 'text-success' if opp.spread > 0 else 'text-danger' }}">
+                {{ opp.spread|round(2) }}%
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6" class="text-center">Наразі арбітражних можливостей не знайдено</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    function applyFilters() {
+        const minSpread = parseFloat(document.getElementById('min-spread').value) || 0;
+        const rows = document.querySelectorAll('.table tbody tr');
+
+        rows.forEach(row => {
+            const spread = parseFloat(row.querySelector('td:nth-child(6)').textContent);
+            row.style.display = spread >= minSpread ? '' : 'none';
+        });
+    }
+</script>
+{% endblock scripts %}

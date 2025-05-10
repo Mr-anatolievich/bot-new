@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Арбітражний бот{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <h2>Arbitrage Bot</h2>
+    </div>
+    <div class="menu-item {% if request.path == '/arbitrage' %}active{% endif %}" onclick="window.location='/arbitrage'">
+        <span class="menu-icon">🔀</span>
+        <span>Арбітраж</span>
+    </div>
+    <div class="menu-item {% if request.path == '/tokens' %}active{% endif %}" onclick="window.location='/tokens'">
+        <span class="menu-icon">🪙</span>
+        <span>Токени по біржах</span>
+    </div>
+    <div class="menu-item {% if request.path == '/networks' %}active{% endif %}" onclick="window.location='/networks'">
+        <span class="menu-icon">🌐</span>
+        <span>Мережі та комісії</span>
+    </div>
+</div>
+
+
+<div class="main-content">
+    {% block exchanges_banner %}{% endblock %}
+    {% block content %}{% endblock %}
+</div>
+{% block scripts %}{% endblock %}
+</body>
+</html>

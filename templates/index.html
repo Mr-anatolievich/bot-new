@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Арбітражний бот</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+{% extends "base.html" %}
+{% block title %}Арбітражний бот{% endblock %}
+
+{% block content %}
+<div class="exchanges-banner">
+    {% for ex in [
+    ('binance', 'Binance'),
+    ('bybit', 'Bybit'),
+    ('okx', 'OKX'),
+    ('kucoin', 'KuCoin'),
+    ('gateio', 'Gate.io'),
+    ('huobi', 'Huobi'),
+    ('cryptocom', 'Crypto.com'),
+    ('mexc', 'MEXC'),
+    ('bitget', 'Bitget')
+    ] %}
+    <div class="exchange-badge">
+        <img src="{{ url_for('static', filename=ex[0] + '.svg') }}" alt="{{ ex[1] }}">
+        <span>{{ ex[1] }}</span>
+    </div>
+    {% endfor %}
+</div>
+<div class="auto-refresh-filter">
+    <label for="refresh-interval">Оновлювати дані:</label>
+    <select id="refresh-interval">
+        <option value="0">Не оновлювати</option>
+        <option value="5" selected>5 секунд</option>
+        <option value="10">10 секунд</option>
+        <option value="15">15 секунд</option>
+        <option value="30">30 секунд</option>
+    </select>
+</div>
+
+<h1>Арбітражні можливості на криптобіржах</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Пара валют</th>
+        <th>Купити</th>
+        <th>Продати</th>
+        <th>Прибуток (%)</th>
+        <th>Мережі</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% include 'table_body.html' %}
+    </tbody>
+</table>
+{% endblock %}
+<script>
+    let refreshTimer = null;
+
+    function fetchTable() {
+        fetch('/api/data')
+            .then(response => response.text())
+            .then(html => {
+                document.querySelector('tbody').innerHTML = html;
+            });
+    }
+
+    function setupAutoRefresh() {
+        const intervalSelect = document.getElementById('refresh-interval');
+        if (!intervalSelect) return;
+        if (refreshTimer) clearInterval(refreshTimer);
+
+        const interval = parseInt(intervalSelect.value, 10);
+        if (interval > 0) {
+            refreshTimer = setInterval(fetchTable, interval * 1000);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const intervalSelect = document.getElementById('refresh-interval');
+        if (intervalSelect) {
+            intervalSelect.addEventListener('change', function() {
+                setupAutoRefresh();
+            });
+            setupAutoRefresh();
+        }
+    });
+</script>
+
+</body>
+</html>

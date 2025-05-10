@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Токени по біржах | Арбітражний бот{% endblock %}
+
+{% block content %}
+<div class="auto-refresh-filter">
+    <label>Оновлювати:</label>
+    <select id="refresh-interval-tokens">
+        <option value="0">Не оновлювати</option>
+        <option value="5">5 сек</option>
+        <option value="10">10 сек</option>
+        <option value="30">30 сек</option>
+    </select>
+</div>
+
+<div class="exchange-tabs">
+    {% for ex_id in ['binance', 'bybit', 'okx', 'kucoin', 'gateio', 'huobi', 'cryptocom', 'mexc', 'bitget'] %}
+    <div class="tab{% if loop.first %} active{% endif %}"
+         data-exchange="{{ ex_id }}"
+         data-url="{{ url_for('api_tokens_by_exchange', exchange_id=ex_id) }}">
+        <img src="{{ url_for('static', filename=ex_id + '.svg') }}" alt="{{ ex_id }}">
+        {{ ex_id|capitalize }}
+    </div>
+    {% endfor %}
+</div>
+
+<div class="exchange-content">
+    {% for ex_id in ['binance', 'bybit', 'okx', 'kucoin', 'gateio', 'huobi', 'cryptocom', 'mexc', 'bitget'] %}
+    <div id="{{ ex_id }}-content" class="exchange-panel{% if loop.first %} active{% endif %}">
+        <div class="loading-spinner" style="display:none;">Завантаження...</div>
+        <div class="table-responsive"></div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.tab');
+        let refreshTimer = null;
+
+        async function loadTabData(tab) {
+            const panel = document.querySelector(`#${tab.dataset.exchange}-content`);
+            const url = tab.dataset.url;
+
+            panel.querySelector('.loading-spinner').style.display = 'block';
+
+            try {
+                const response = await fetch(url);
+                const html = await response.text();
+                panel.querySelector('.table-responsive').innerHTML = html;
+            } catch (error) {
+                console.error('Помилка завантаження:', error);
+                panel.querySelector('.table-responsive').innerHTML =
+                    '<div class="error">Не вдалося завантажити дані</div>';
+            } finally {
+                panel.querySelector('.loading-spinner').style.display = 'none';
+            }
+        }
+
+        // Обробка перемикання вкладок
+        tabs.forEach(tab => {
+            tab.addEventListener('click', async function() {
+                tabs.forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.exchange-panel').forEach(p => {
+                    p.classList.remove('active');
+                    p.querySelector('.table-responsive').innerHTML = '';
+                });
+
+                this.classList.add('active');
+                const panel = document.querySelector(`#${this.dataset.exchange}-content`);
+                panel.classList.add('active');
+
+                await loadTabData(this);
+            });
+        });
+
+        // Автооновлення
+        function setupAutoRefresh() {
+            if (refreshTimer) clearInterval(refreshTimer);
+
+            const interval = parseInt(
+                document.getElementById('refresh-interval-tokens').value,
+                10
+            );
+
+            if (interval > 0) {
+                refreshTimer = setInterval(() => {
+                    const activeTab = document.querySelector('.tab.active');
+                    if (activeTab) loadTabData(activeTab);
+                }, interval * 1000);
+            }
+        }
+
+        // Ініціалізація першої вкладки
+        const initialTab = document.querySelector('.tab.active');
+        if (initialTab) loadTabData(initialTab);
+
+        document.getElementById('refresh-interval-tokens')
+            .addEventListener('change', setupAutoRefresh);
+    });
+</script>
+
+<style>
+    .loading-spinner {
+        padding: 20px;
+        text-align: center;
+        color: #f7c331;
+    }
+    .error {
+        color: #ff4d4f;
+        padding: 20px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
