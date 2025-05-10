@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request
+# Import necessary libraries and modules
+from flask import Flask, render_template, request, redirect, url_for
 from binance.client import Client as BinanceClient
 from pybit.unified_trading import HTTP as BybitClient
 from kucoin.client import Client as KucoinClient
@@ -18,12 +19,14 @@ import pybase64 as base64
 import datetime
 from dotenv import load_dotenv
 import re
-from flask import redirect, url_for
 
+# Initialize Flask app
 app = Flask(__name__)
 
+# Load environment variables from .env file
 load_dotenv()
 
+# Initialize API clients for various exchanges
 binance_client = BinanceClient(
     api_key=os.getenv('BINANCE_API_KEY'),
     api_secret=os.getenv('BINANCE_API_SECRET')
@@ -70,7 +73,7 @@ mexc_client = Spot(api_key=os.getenv('MEXC_API_KEY'), api_secret=os.getenv('MEXC
 
 bitget_client = BitgetClient(BITGET_API_KEY, BITGET_API_SECRET, BITGET_API_PASSPHRASE)
 
-# --- Кеші та таймінги ---
+# Cache variables and duration for network data
 binance_networks_cache = {}
 bybit_networks_cache = {}
 okx_networks_cache = {}
@@ -92,16 +95,20 @@ bitget_cache_time = 0
 cryptocom_cache_time = 0
 CACHE_DURATION = 3600
 
+# Utility function to normalize trading pair symbols
 def normalize_symbol(symbol):
+    # Removes special characters and standardizes stablecoin suffixes
     symbol = symbol.replace('-', '').replace('_', '').replace('/', '').upper()
-    if symbol.endswith(('USDT', 'USDC')):  # Стандартизація для стейблкоінів
+    if symbol.endswith(('USDT', 'USDC')):
         return symbol[:-4] + symbol[-4:]
     return symbol
 
+# Extract the base token from a trading pair symbol
 def get_base_token(symbol):
     match = re.match(r'^([A-Z]+)(USDT|BTC|ETH|BUSD|USDC)$', symbol)
     return match.group(1) if match else symbol
 
+# Fetch trading data from Binance
 def get_binance_data():
     try:
         tickers = binance_client.get_ticker()
@@ -122,6 +129,7 @@ def get_binance_data():
         app.logger.error(f"Binance error: {str(e)}")
         return {}
 
+# Fetch trading data from Bybit
 def get_bybit_data():
     try:
         result = bybit_client.get_tickers(category='spot')
@@ -142,6 +150,7 @@ def get_bybit_data():
         app.logger.error(f"Bybit error: {str(e)}")
         return {}
 
+# Fetch trading data from OKX
 def get_okx_data():
     try:
         timestamp = datetime.now(timezone.utc).isoformat()[:-13]+'Z'
@@ -182,6 +191,7 @@ def get_okx_data():
         app.logger.error(f"OKX error: {str(e)}")
         return {}
 
+# Fetch trading data from KuCoin
 def get_kucoin_data():
     try:
         tickers = kucoin_client.get_tickers()
@@ -208,6 +218,7 @@ def get_kucoin_data():
         app.logger.error(f"KuCoin error: {str(e)}")
         return {}
 
+# Fetch trading data from Gate.io
 def get_gateio_data():
     try:
         response = requests.get("https://api.gateio.ws/api/v4/spot/tickers", timeout=10)
@@ -235,6 +246,7 @@ def get_gateio_data():
         app.logger.error(f"Gate.io error: {str(e)}")
         return {}
 
+# Fetch trading data from Huobi
 def get_huobi_data():
     try:
         response = requests.get("https://api.huobi.pro/market/tickers", timeout=10)
@@ -262,6 +274,7 @@ def get_huobi_data():
         app.logger.error(f"Huobi error: {str(e)}")
         return {}
 
+# Fetch trading data from MEXC
 def get_mexc_data():
     try:
         response = mexc_client.market.ticker()
@@ -284,6 +297,7 @@ def get_mexc_data():
         app.logger.error(f"MEXC error: {str(e)}")
         return {}
 
+# Fetch trading data from Bitget
 def get_bitget_data():
     try:
         response = requests.get("https://api.bitget.com/api/spot/v1/market/tickers", timeout=10)
@@ -311,6 +325,7 @@ def get_bitget_data():
         app.logger.error(f"Bitget error: {str(e)}")
         return {}
 
+# Fetch trading data from Crypto.com
 def get_cryptocom_data():
     try:
         response = requests.get("https://api.crypto.com/v2/public/get-ticker", timeout=10)
@@ -339,7 +354,7 @@ def get_cryptocom_data():
         app.logger.error(f"Crypto.com error: {str(e)}")
         return {}
 
-
+# Fetch network data for Binance coins
 def get_binance_networks_for_coins():
     global binance_networks_cache, binance_cache_time
     current_time = time.time()
@@ -361,6 +376,7 @@ def get_binance_networks_for_coins():
             app.logger.error(f"Binance networks error: {str(e)}")
     return binance_networks_cache
 
+# Fetch network data for Bybit coins
 def get_bybit_networks_for_coins():
     global bybit_networks_cache, bybit_cache_time
     current_time = time.time()
@@ -382,6 +398,7 @@ def get_bybit_networks_for_coins():
             app.logger.error(f"Bybit networks error: {str(e)}")
     return bybit_networks_cache
 
+# Fetch network data for OKX coins
 def get_okx_networks_for_coins():
     global okx_networks_cache, okx_cache_time
     current_time = time.time()
@@ -423,6 +440,7 @@ def get_okx_networks_for_coins():
             app.logger.error(f"OKX networks error: {str(e)}")
     return okx_networks_cache
 
+# Fetch network data for KuCoin coins
 def get_kucoin_networks_for_coins():
     global kucoin_networks_cache, kucoin_cache_time
     current_time = time.time()
@@ -456,6 +474,7 @@ def get_kucoin_networks_for_coins():
             app.logger.error(f"KuCoin networks error: {str(e)}")
     return kucoin_networks_cache
 
+# Fetch network data for Gate.io coins
 def get_gateio_networks_for_coins():
     global gateio_networks_cache, gateio_cache_time
     current_time = time.time()
@@ -481,6 +500,7 @@ def get_gateio_networks_for_coins():
             app.logger.error(f"Gate.io networks error: {str(e)}")
     return gateio_networks_cache
 
+# Fetch network data for Huobi coins
 def get_huobi_networks_for_coins():
     global huobi_networks_cache, huobi_cache_time
     current_time = time.time()
@@ -509,6 +529,7 @@ def get_huobi_networks_for_coins():
             app.logger.error(f"Huobi networks error: {str(e)}")
     return huobi_networks_cache
 
+# Fetch network data for MEXC coins
 def get_mexc_networks_for_coins():
     global mexc_networks_cache, mexc_cache_time
     current_time = time.time()
@@ -556,6 +577,7 @@ def get_mexc_networks_for_coins():
 
     return mexc_networks_cache
 
+# Fetch network data for Bitget coins
 def get_bitget_networks_for_coins():
     global bitget_networks_cache, bitget_cache_time
     current_time = time.time()
@@ -587,6 +609,7 @@ def get_bitget_networks_for_coins():
             app.logger.error(f"Bitget networks error: {str(e)}")
     return bitget_networks_cache
 
+# Fetch network data for Crypto.com coins
 def get_cryptocom_networks_for_coins():
     global cryptocom_networks_cache, cryptocom_cache_time
     current_time = time.time()
@@ -614,6 +637,7 @@ def get_cryptocom_networks_for_coins():
             app.logger.error(f"Crypto.com networks error: {str(e)}")
     return cryptocom_networks_cache
 
+# Get network information for a specific token
 def get_networks_for_token(symbol):
     base_token = get_base_token(symbol)
     # Отримуємо мережі з усіх бірж
@@ -636,9 +660,11 @@ def get_networks_for_token(symbol):
             result.append({'exchange': exchange, 'networks': net_names})
     return result
 
+# Check if a trading pair is a stablecoin pair
 def is_stablecoin_pair(symbol):
     return symbol.endswith('USDT')
 
+# Get data for the table
 def get_table_data():
     exchange_data = {
         "Binance": get_binance_data(),
@@ -704,6 +730,7 @@ def get_table_data():
 
     return sorted(table, key=lambda x: x['spread'], reverse=True)
 
+# Get data from all exchanges
 def get_all_exchanges_data():
 
     return {
@@ -719,6 +746,7 @@ def get_all_exchanges_data():
 
 from collections import defaultdict
 
+# Find arbitrage opportunities across exchanges
 def find_arbitrage_opportunities(exchange_data, min_spread=0.1):
     symbol_counts = defaultdict(int)
     for data in exchange_data.values():
@@ -801,6 +829,7 @@ def tokens():
     }
     return render_template('tokens.html', exchanges=exchanges_data)
 
+# Format token data for display
 def format_tokens(exchange_data, networks_data):
     tokens = []
     for symbol, data in exchange_data.items():
