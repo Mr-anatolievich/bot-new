@@ -124,3 +124,45 @@ project/
 * Integrate Celery or APScheduler for periodic syncs
 
 ---
+
+# 📐 Project Coding Standards (Python/Flask)
+
+## Code Standards and Conventions
+- Use **PEP8** for all Python code.
+- Always use **type annotations** for functions.
+- Organize HTML using semantic tags (e.g., `<main>`, `<section>`) where applicable.
+- Prefer **Jinja2 inheritance** over duplication.
+
+## Code Architecture and Organization
+- Group code by feature: separate `routes/`, `services/`, and `utils/`.
+- Keep `app.py` minimal; register all logic through `Blueprints`.
+- Follow layered structure: **routes (presentation)** → **services (logic)** → **helpers/utilities**.
+
+## Best Practices
+- Use environment variables for secrets (with `python-dotenv`).
+- Sanitize all external data sources and API inputs.
+- Minimize logic in templates; delegate to Python functions.
+- Implement periodic syncs or async processing using `Celery` if necessary.
+
+## Testing and Quality
+- Use `pytest` for unit/integration testing.
+- Mock API calls in tests using `requests-mock` or `unittest.mock`.
+- Maintain at least **80% test coverage** for core business logic.
+
+## Security
+- Sanitize and validate input before any API request or DB save.
+- Do not store secrets in code — use `.env` or secret managers.
+- Use `flask-talisman` to enforce secure headers (CSP, HSTS).
+- Avoid rendering sensitive error details in production.
+
+<!-- ## Deployment & DevOps
+- Use `gunicorn` + `nginx` for production deployments.
+- Containerize with Docker, base image `python:3.11-slim`.
+- CI/CD pipeline: use GitHub Actions with checks (`black`, `flake8`, `pytest`). -->
+
+## Documentation and Versioning
+- Use docstrings (PEP257) and `Sphinx` for project documentation.
+- Follow **Conventional Commits** for Git (`feat:`, `fix:`, `chore:`).
+- Maintain a `README.md` in the root with setup and usage instructions.
+- Use `CHANGELOG.md` for version history and changes.
+```
