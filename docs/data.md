@@ -1,163 +1,163 @@
-# Опис функціоналу Arbitrage Bot
+# Arbitrage Bot Feature Overview
 
-Arbitrage Bot — це веб-платформа для моніторингу арбітражних можливостей між криптовалютними біржами з урахуванням комісій, мереж виведення, цін на купівлю/продаж і доступних активів. Інтерфейс складається з кількох вкладок:
+Arbitrage Bot is a web platform for monitoring arbitrage opportunities across cryptocurrency exchanges, taking into account fees, withdrawal networks, buy/sell prices, and available balances. The interface consists of several tabs:
 
 ---
 
-## 📌 Прекондішини
+## 📌 Preconditions
 
-* Ми працюємо з біржами: `binance`, `kucoin`, `bybit`, `gate`, `okx`, `bitget`, `huobi`.
-* По кожній біржі отримуються дані про токени, які працюють з парою **USDT**.
-* Дані зберігаються в базу по кожному токену:
+* We work with the following exchanges: `binance`, `kucoin`, `bybit`, `gate`, `okx`, `bitget`, `huobi`.
+* For each exchange, data is retrieved for tokens paired with **USDT**.
+* The following data is stored in the database for each token:
 
-  * **Ціна продажу (ask)**
-  * **Ціна купівлі (bid)**
-  * **Список мереж для виведення**
-  * **Комісія мережі на виведення**
-  * **Обʼєм торгів на біржі по цьому токену**
+  * **Sell price (ask)**
+  * **Buy price (bid)**
+  * **Available withdrawal networks**
+  * **Withdrawal network fee**
+  * **Trading volume on the exchange for this token**
 
 ---
 
 ## 📊 Dashboard
 
-* **Total Balance (\$)**: загальна сума балансу на всіх біржах, розрахована в USDT або USDC. Показується зміна за 24 години.
-* **Wallet Breakdown**: кругова діаграма (donut chart) з розподілом активів по біржах. При наведенні — додаткові дані: доступний баланс, заморожений та загальний.
-* **PnL Today / MTD (Month-to-Date)**: KPI-картки з показниками брутто-прибутку, комісій та чистого прибутку. Прибутки підсвічуються зеленим, збитки — червоним.
-* **Performance Chart**: лінійний графік продуктивності за обраний період.
+* **Total Balance (\$)**: total balance across all exchanges, calculated in USDT or USDC. Shows 24-hour change.
+* **Wallet Breakdown**: donut chart showing the distribution of assets across exchanges. Hover to see available, frozen, and total balances.
+* **PnL Today / MTD (Month-to-Date)**: KPI cards showing gross profit, fees, and net profit. Profits are highlighted in green, losses in red.
+* **Performance Chart**: line chart showing performance over the selected period.
 
 ---
 
 ## 🔀 Arbitrage
 
-* Показує можливості арбітражу між біржами з фільтрацією по прибутковості (>0.1%).
-* Таблиця включає такі колонки:
+* Displays arbitrage opportunities between exchanges, filtered by profitability (>0.1%).
+* Table columns include:
 
-  * **Валютна пара** (наприклад, BTC/USDT)
-  * **Біржа для купівлі** та **вартість токену для купівлі**
-  * **Біржа для продажу** та **вартість токену для продажу**
-  * **Обсяг** — 24-годинний обсяг торгів для цієї пари на біржі купівлі
-  * **Профіт (%)** — розрахована прибутковість з урахуванням спреду
-  * **Час життя угоди** — як довго зберігається ця можливість без змін
-  * **Мережі** — доступні мережі для виведення та депозиту цього токена
-* Колірна індикація прибутку (зелений) або збитку (червоний).
-* Підтримує автооновлення таблиці за заданим інтервалом.
+  * **Currency pair** (e.g., BTC/USDT)
+  * **Buy exchange** and **token price for purchase**
+  * **Sell exchange** and **token price for sale**
+  * **Volume** — 24-hour trading volume on the buy exchange
+  * **Profit (%)** — calculated profit margin
+  * **Deal lifetime** — how long the opportunity remains valid
+  * **Networks** — available networks for withdrawal and deposit of this token
+* Profit is shown in green, loss in red.
+* Supports automatic table refresh at a specified interval.
 
 ---
 
-## ⚙️ Алгоритм виконання угоди
+## ⚙️ Trade Execution Algorithm
 
-1. Знаходиться торгова пара, де є спред між біржею A (купівля) та біржею B (продаж).
-2. Створюється ордер **на купівлю** токену **по ринку** на біржі A.
-3. Перевіряється, що токен **успішно куплено** і він **відображається в гаманці** біржі A.
-4. Здійснюється **транзакція переказу** токена з біржі A на біржу B через обрану мережу.
-5. Чекаємо підтвердження — токен **зараховується на біржу B** (може зайняти певний час).
-6. Створюється **лімітний ордер на продаж** токена на біржі B, де ціна обраховується за формулою:
+1. Identify a trading pair with a spread between exchange A (buy) and exchange B (sell).
+2. Create a **market order** to buy the token on exchange A.
+3. Confirm the token is **successfully purchased** and appears in the wallet on exchange A.
+4. **Transfer the token** from exchange A to exchange B via the selected network.
+5. Wait for confirmation — token is **credited to exchange B** (this may take time).
+6. Create a **limit order to sell** the token on exchange B, where the price is calculated as:
 
-   **Ціна продажу = Ціна купівлі (A) + Комісія купівлі + Комісія мережі + Фіксований спред, який був на момент виявлення можливості**
+   **Sell price = Buy price (A) + Purchase fee + Network fee + Fixed spread at time of opportunity detection**
 
 ---
 
 ## 📏 Position Size
 
-У цій вкладці користувач обирає спосіб розрахунку розміру позиції для відкриття арбітражної угоди.
+This tab allows the user to select how to calculate the position size for opening an arbitrage trade.
 
 * **Mode Selector**:
 
-  * **Fixed amount** — введення конкретної суми в USD (мінімум 10 \$). Ця сума використовується як фіксований розмір позиції при відкритті ордера на купівлю токену.
-  * **Percent of free balance** — вибір через повзунок (1–100%) частки доступного балансу USDT на гаманці. Цей режим дозволяє динамічно керувати ризиками на основі поточного балансу.
+  * **Fixed amount** — input a specific amount in USD (minimum \$10). This amount is used as the fixed trade size.
+  * **Percent of free balance** — select a percentage (1–100%) of the available USDT wallet balance. This mode allows dynamic risk management.
 
-* **Save** — обране значення зберігається в базу даних і буде застосовано при натисканні кнопки **«Execute»**.
+* **Save** — the selected value is saved to the database and applied when the **"Execute"** button is pressed.
 
 ---
 
 ## 📈 History
 
-> ⚠️ **Проблема, яку потрібно вирішити:** Якщо після купівлі токена на біржі A та переказу на біржу B ціна токена знизилася, необхідно визначити подальші дії:
+> ⚠️ **Problem to solve:** If the token price drops after buying on exchange A and transferring to exchange B, what should be done?
 >
-> * Чи продавати відразу з фіксацією збитку?
-> * Чи чекати повернення ціни?
-> * Чи встановлювати динамічну стратегію з використанням stop-limit ордерів або алгоритмічного трейдера?
+> * Sell immediately and take the loss?
+> * Wait for the price to recover?
+> * Set up a dynamic strategy with stop-limit orders or algorithmic trading?
 
-У цій вкладці виводиться таблиця з історією всіх виконаних арбітражних угод. Дані беруться з бази, де зберігається кожна операція купівлі та продажу. Таблиця включає наступні колонки:
+This tab displays a table of all completed arbitrage trades. Data is retrieved from the database, which stores every buy and sell operation. Table columns include:
 
 \| | Date/Time     | Market      | Exchange (Buy→Sell) | Volume \$ | 1st/2nd price     | Status |
 \|---------------|-------------|---------------------|----------|-------------------|--------|
 
-* **Date/Time** — дата й час виконання операції.
-* **Market** — валютна пара (наприклад, ETH/USDT).
-* **Exchange (Buy→Sell)** — біржа купівлі → біржа продажу.
-* **Volume \$** — обсяг угоди в доларах США.
-* **1st/2nd price** — ціна купівлі та ціна продажу.
-* **Status** — статус угоди (успішно, помилка тощо).
+* **Date/Time** — timestamp of the operation.
+* **Market** — currency pair (e.g., ETH/USDT).
+* **Exchange (Buy→Sell)** — buy exchange → sell exchange.
+* **Volume \$** — trade volume in USD.
+* **1st/2nd price** — buy and sell prices.
+* **Status** — trade status (success, error, etc.).
 
 ---
 
 ## 🔐 Security
 
-* API-ключі зберігаються в `.env` файлі, що не потрапляє в репозиторій.
-* Захист через IP Whitelisting (планується).
-* Використання `flask-talisman` для безпечних заголовків (CSP, HSTS).
+* API keys are stored in the `.env` file, which is not included in the repository.
+* Planned IP whitelisting for enhanced protection.
+* Uses `flask-talisman` for secure headers (CSP, HSTS).
 
 ---
 
 ## 🔔 Notifications
 
-**Система сповіщень через Telegram-бота включає шаблони повідомлень:**
+**The notification system via Telegram bot includes the following message templates:**
 
-* ✅ **Trade Executed** — повідомлення про виконану угоду:
+* ✅ **Trade Executed** — notification about a completed trade:
 
   ```
-  💰 Угода виконана!
-  🔄 Куплено на: {{ buy_exchange }}
-  💸 Продано на: {{ sell_exchange }}
-  📈 Профіт: {{ profit_percent }}%
-  📊 Обсяг: {{ volume_usd }} USDT
+  💰 Trade Executed!
+  🔄 Bought on: {{ buy_exchange }}
+  💸 Sold on: {{ sell_exchange }}
+  📈 Profit: {{ profit_percent }}%
+  📊 Volume: {{ volume_usd }} USDT
   🕒 {{ timestamp }}
   ```
 
-* ✅ **Daily Balance Summary (08:00 UTC)** — щоденний звіт по біржах:
+* ✅ **Daily Balance Summary (08:00 UTC)** — daily balance report:
 
   ```
-  📊 Добовий звіт балансу
-  💼 Біржа: {{ exchange_name }}
-  💵 Баланс: {{ balance }} USDT
-  🔒 Заморожено: {{ frozen }} USDT
-  🟢 Доступно: {{ available }} USDT
+  📊 Daily Balance Summary
+  💼 Exchange: {{ exchange_name }}
+  💵 Balance: {{ balance }} USDT
+  🔒 Frozen: {{ frozen }} USDT
+  🟢 Available: {{ available }} USDT
   📅 {{ date }}
   ```
 
-* ⚠️ **Low Wallet Balance** — сповіщення про низький баланс:
+* ⚠️ **Low Wallet Balance** — low balance warning:
 
   ```
-  🚨 Низький баланс гаманця!
-  👛 Біржа: {{ exchange_name }}
-  🔻 Поточний баланс: {{ balance }} USDT
-  🧯 Мінімальний ліміт: {{ threshold }} USDT
+  🚨 Low Wallet Balance!
+  👛 Exchange: {{ exchange_name }}
+  🔻 Current Balance: {{ balance }} USDT
+  🧯 Minimum Threshold: {{ threshold }} USDT
   ```
 
-* ❌ **API Key Error / IP Mismatch** — помилка авторизації:
+* ❌ **API Key Error / IP Mismatch** — authorization error:
 
   ```
-  ❗️Помилка авторизації
-  🔐 Біржа: {{ exchange_name }}
-  📛 Причина: {{ error_message }}
+  ❗️Authorization Error
+  🔐 Exchange: {{ exchange_name }}
+  📛 Reason: {{ error_message }}
   📍 IP: {{ current_ip }}
-  🔄 Перевірте API ключ або дозволені IP
+  🔄 Check your API key or allowed IPs
   ```
 
-* 🧪 **Test Message** — тестове повідомлення:
+* 🧪 **Test Message** — test notification:
 
   ```
-  ✅ Тестове повідомлення
-  Це перевірка роботи Telegram-бота для сповіщень.
-  Все працює коректно! 🚀
+  ✅ Test Message
+  This is a test notification from the Telegram bot.
+  Everything is working fine! 🚀
   ```
 
 ---
 
 ## 🆕 Exchanges
 
-* Перелік підтримуваних бірж: Binance, Bybit, OKX, KuCoin, Gate.io, Huobi, MEXC, Bitget.
-* Вивід токенів по кожній біржі із цінами bid/ask, обʼємами торгів та доступними мережами.
-* Автоматичне оновлення даних.
-* Вкладки по біржах з логотипами.
+* Supported exchanges: Binance, Bybit, OKX, KuCoin, Gate.io, Huobi, MEXC, Bitget.
+* Tokens per exchange are displayed with bid/ask prices, trading volume, and available networks.
+* Data auto-refresh is supported.
+* Tabs with exchange logos.
