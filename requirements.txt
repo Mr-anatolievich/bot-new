@@ -1,12 +1,30 @@
+# Flask core
 flask
+flask-cors
+flask-sqlalchemy
+flask-limiter
+flask-caching
+
+# Exchange APIs
 python-binance
 pybit
-requests
-python-dotenv
-pybase64
 python-kucoin
 gate-api
 huobi
 mexc-api
 python-bitget
 
+# Utilities
+requests
+python-dotenv
+pybase64
+
+# Database
+flask-migrate
+
+# Production
+gunicorn
+
+# Development & Testing
+pytest
+pytest-cov
