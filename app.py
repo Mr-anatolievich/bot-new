@@ -1,73 +1,68 @@
-#!/usr/bin/env python3
-"""
-Arbitrage Bot - Main Flask Application
-Modern API-first architecture with React SPA frontend
-"""
-
 import os
 import logging
-
-import db
-
-import app
-from flask import Flask, jsonify, send_from_directory, send_file
+from flask import Flask, jsonify, send_from_directory, request, render_template, send_file
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_caching import Cache
 
-from flask_migrate import Migrate
-migrate = Migrate(app, db)
-
-# Import configuration
-from config.settings import get_config
-
-# Import models
+from config import get_config
 from models import db
+from services import register_all_exchanges  # <-- 'cache' прибрано звідси
+from cli import register_commands
 
-# Initialize Flask extensions
+# Ініціалізація розширень як глобальних об'єктів
+migrate = Migrate()
+limiter = Limiter(key_func=get_remote_address)
 cache = Cache()
-limiter = Limiter(
-    key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"]
-)
-
 
 def create_app(config_name=None):
-    """Application factory pattern"""
+    """
+    Фабрика для створення екземпляра додатку Flask (Application Factory).
+    """
+    if config_name is None:
+        config_name = os.getenv('FLASK_CONFIG', 'development')
+
     app = Flask(__name__,
                 static_folder='static',
                 static_url_path='/static')
 
-    # Load configuration
-    config_class = get_config(config_name)
-    app.config.from_object(config_class)
+    # 1. Завантаження конфігурації
+    config = get_config(config_name)
+    app.config.from_object(config)
 
-    # Configure logging
-    setup_logging(app)
+    # 2. Налаштування логування
+    if not app.debug and not app.testing:
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    # Initialize extensions
-    setup_extensions(app)
+    # 3. Ініціалізація розширень
+    db.init_app(app)
+    cache.init_app(app)  # Ініціалізуємо кеш з конфігурацією додатку
+    limiter.init_app(app)
+    migrate.init_app(app, db)
 
-    # Setup CORS for React development
-    setup_cors(app)
+    # 4. Реєстрація Blueprints (маршрутів)
+    from routes.arbitrage import arbitrage_bp
+    from routes.tokens import tokens_bp
+    from routes.networks import networks_bp
 
-    # Register blueprints
-    register_blueprints(app)
+    app.register_blueprint(arbitrage_bp, url_prefix='/api/v1')
+    app.register_blueprint(tokens_bp, url_prefix='/api/v1')
+    app.register_blueprint(networks_bp, url_prefix='/api/v1')
 
-    # Register error handlers
-    register_error_handlers(app)
+    # 5. Ініціалізація сервісів (виконується в контексті додатку)
+    with app.app_context():
+        register_all_exchanges()
 
-    # Setup React SPA routes
-    setup_spa_routes(app)
+    # 6. Реєстрація CLI команд
+    register_commands(app)
 
-    # Register CLI commands
-    register_cli_commands(app)
+    # 7. Налаштування роутів для SPA та обробників помилок
+    setup_spa_and_error_handlers(app)
 
-    app.logger.info("Arbitrage Bot initialized successfully")
+    app.logger.info(f"Arbitrage Bot запущено в режимі '{config_name}'.")
     return app
-
 
 def register_cli_commands(app):
     """Register CLI commands"""
@@ -172,23 +167,38 @@ def create_fallback_routes(app):
         })
 
 
-def register_error_handlers(app):
-    """Register error handlers"""
+def setup_spa_and_error_handlers(app):
+    """
+    Налаштовує роутинг для React SPA та глобальні обробники помилок.
+    """
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve_spa(path):
+        # Якщо запит до API або статичного файлу, Flask обробить його раніше.
+        # Всі інші запити віддають головний файл React-додатку.
+        if request.path.startswith('/api/'):
+            return jsonify(error='API endpoint not found'), 404
+        return send_from_directory(app.template_folder, 'index.html')
+
+    @app.route('/health')
+    def health_check():
+        return jsonify(status='healthy', environment=app.config.get('FLASK_ENV'))
+
     @app.errorhandler(404)
     def not_found_error(error):
-        if app.config['DEBUG']:
-            return jsonify({'error': 'Not found', 'message': str(error)}), 404
-        # For production, serve React app for unknown routes (SPA routing)
-        return serve_react_app()
+        if request.path.startswith('/api/'):
+            return jsonify(error='Not Found', message=str(error)), 404
+        # Для фронтенду віддаємо React, щоб він обробив роутинг
+        return send_from_directory(app.template_folder, 'index.html'), 404
+
+    @app.errorhandler(429)
+    def ratelimit_handler(e):
+        return jsonify(error='Rate limit exceeded', message=str(e.description)), 429
 
     @app.errorhandler(500)
     def internal_error(error):
         app.logger.error(f'Server Error: {error}')
-        return jsonify({'error': 'Internal server error'}), 500
-
-    @app.errorhandler(429)
-    def ratelimit_handler(e):
-        return jsonify({'error': 'Rate limit exceeded', 'message': str(e)}), 429
+        return jsonify(error='Internal Server Error'), 500
 
 
 def setup_spa_routes(app):
@@ -230,13 +240,12 @@ def setup_spa_routes(app):
 def serve_react_app():
     """Serve React application"""
     try:
-        # Try to serve built React app
+        # Спробувати віддати зібраний React-додаток
         react_build_path = os.path.join('static', 'build', 'index.html')
         if os.path.exists(react_build_path):
             return send_file(react_build_path)
 
-        # Fallback to development template
-        from flask import render_template
+        # Якщо збірки немає, віддати шаблон для розробки
         return render_template('index.html')
 
     except Exception as e:

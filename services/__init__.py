@@ -1,9 +1,9 @@
 """
-Services package initialization
-Exports all exchange services and utilities
+Ініціалізація пакету сервісів.
+Експортує всі необхідні утиліти та сервіси.
 """
 
-# Import base classes and utilities
+# Імпортуємо базові класи та утиліти з правильного місця
 from .exchanges.base import (
     BaseExchangeService,
     ExchangeManager,
@@ -11,10 +11,10 @@ from .exchanges.base import (
     register_all_exchanges
 )
 
-# Import arbitrage service
+# Імпортуємо сервіс арбітражу
 from .arbitrage import ArbitrageService
 
-# Export all services
+# Визначаємо, що буде доступно при імпорті з 'services'
 __all__ = [
     'BaseExchangeService',
     'ExchangeManager',
@@ -23,7 +23,7 @@ __all__ = [
     'ArbitrageService'
 ]
 
-# Helper function to get all exchange services
+# Допоміжна функція (за бажанням)
 def get_all_exchange_services():
-    """Get all available exchange services from the manager"""
+    """Повертає всі доступні сервіси бірж з менеджера."""
     return get_exchange_manager().get_all_exchanges()
