@@ -1,285 +1,229 @@
-# 🚀 Arbitrage Bot - Modern Architecture
+# Arbitrage Bot
 
-A comprehensive cryptocurrency arbitrage platform built with **Flask API backend** and **React frontend**. Monitors arbitrage opportunities across multiple exchanges with real-time data and advanced analytics.
+Крипто арбітражний бот із підтримкою декількох бірж, аналізом спредів та API.
 
----
-
-## ✨ Features
-
-- 🔄 **Real-time arbitrage detection** across 7+ exchanges
-- 📊 **Modern React UI** with dark mode support
-- 🛡️ **API-first architecture** with rate limiting
-- 💾 **SQLAlchemy database** for trade history
-- 🔧 **Modular exchange services** with easy extensibility
-- 📈 **Advanced analytics** and dashboard
-- 🌐 **Network fee comparison** for optimal transfers
-- ⚡ **Caching system** for performance
-
----
-
-## 🏗️ Architecture
-
-```
-arbitrage-bot/
-├── app.py                 # Flask application factory
-├── config/                # Application configuration
-│   └── settings.py
-├── routes/                # API route handlers
-│   ├── arbitrage.py       # Arbitrage endpoints
-│   ├── tokens.py          # Token endpoints
-│   └── networks.py        # Network endpoints
-├── services/              # Business logic
-│   ├── arbitrage.py       # Arbitrage calculations
-│   └── exchanges/         # Exchange integrations
-│       ├── base.py        # Base exchange class
-│       ├── binance.py     # Binance implementation
-│       ├── bybit.py       # Bybit implementation
-│       ├── kucoin.py      # KuCoin implementation
-│       └── stub_services.py # Other exchanges
-├── models/                # Database models
-│   ├── base.py           # Base model classes
-│   └── trade.py          # Trade models
-├── utils/                 # Utility functions
-│   └── helpers.py        # Common helpers
-├── templates/             # Jinja2 templates
-│   └── index.html        # React SPA template
-├── static/               # Static assets
-│   └── *.svg            # Exchange logos
-└── tests/               # Test suite
-    ├── conftest.py      # Test configuration
-    └── test_basic.py    # Basic tests
-```
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-- **Python 3.8+**
-- **pip** package manager
-- **API keys** for exchanges (optional for testing)
-
-### Installation
-
-1. **Clone and setup**:
-   ```bash
-   git clone <repository-url>
-   cd arbitrage-bot
-   
-   python -m venv venv
-   source venv/bin/activate  # Windows: venv\Scripts\activate
-   
-   pip install -r requirements.txt
-   ```
-
-2. **Environment configuration**:
-   ```bash
-   cp .env.example .env
-   # Edit .env with your API keys (optional for testing)
-   ```
-
-3. **Run application**:
-   ```bash
-   python app.py
-   ```
-
-4. **Access the platform**:
-   - **Frontend**: http://127.0.0.1:5000
-   - **API Docs**: http://127.0.0.1:5000/api/v1
-   - **Health Check**: http://127.0.0.1:5000/health
-
----
-
-## 🔌 Supported Exchanges
-
-| Exchange | Status | Trading Data | Networks | API Required |
-|----------|--------|--------------|----------|--------------|
-| **Binance** | ✅ Full | ✅ | ✅ | Optional |
-| **Bybit** | ✅ Full | ✅ | ✅ | Optional |
-| **KuCoin** | ✅ Full | ✅ | ✅ | Optional |
-| **Gate.io** | ✅ Basic | ✅ | ✅ | No |
-| **Huobi** | ✅ Basic | ✅ | ✅ | No |
-| **MEXC** | ✅ Basic | ✅ | ⚠️ Limited | No |
-| **Bitget** | ✅ Basic | ✅ | ✅ | No |
-
----
-
-## 📡 API Endpoints
-
-### Core APIs
-- `GET /api/v1/dashboard` - Dashboard statistics
-- `GET /api/v1/arbitrage` - Arbitrage opportunities
-- `GET /api/v1/exchanges` - Exchange status
-
-### Token APIs
-- `GET /api/v1/tokens` - All tokens by exchange
-- `GET /api/v1/tokens/<exchange>` - Tokens for specific exchange
-- `GET /api/v1/tokens/search?q=BTC` - Search tokens
-- `GET /api/v1/tokens/compare/BTCUSDT` - Compare prices
-
-### Network APIs
-- `GET /api/v1/networks` - All withdrawal networks
-- `GET /api/v1/networks/<token>` - Networks for token
-- `GET /api/v1/networks/compare/<token>` - Compare fees
-- `GET /api/v1/networks/cheapest` - Cheapest options
-
----
-
-## ⚙️ Configuration
-
-### Environment Variables (.env)
-```bash
-# Flask settings
-FLASK_ENV=development
-SECRET_KEY=your-secret-key
-DATABASE_URL=sqlite:///arbitrage.db
-
-# Exchange API Keys (optional)
-BINANCE_API_KEY=your-binance-key
-BINANCE_API_SECRET=your-binance-secret
-
-BYBIT_API_KEY=your-bybit-key
-BYBIT_API_SECRET=your-bybit-secret
-
-# Cache settings
-CACHE_DURATION=3600
-MIN_ARBITRAGE_SPREAD=0.1
-
-# Telegram (optional)
-TELEGRAM_BOT_TOKEN=your-bot-token
-TELEGRAM_CHAT_ID=your-chat-id
-```
-
----
-
-## 🧪 Testing
+## 🚀 Швидкий старт
 
 ```bash
-# Install test dependencies
-pip install pytest pytest-cov
-
-# Run tests
-pytest
-
-# With coverage
-pytest --cov=. --cov-report=html
+python3 -m venv venv
+pip install -r requirements.txt
+flask db upgrade
+python run.py
 ```
 
----
+## 📁 Структура проєкту
 
-## 🔧 Development
+```
+# Project Structure
 
-### Adding New Exchange
-
-1. **Create service**:
-   ```python
-   # services/exchanges/new_exchange.py
-   class NewExchangeService(BaseExchangeService):
-       def _fetch_trading_data(self):
-           # Implement trading data fetching
-           pass
-           
-       def _fetch_networks_data(self):
-           # Implement networks data fetching
-           pass
-   ```
-
-2. **Register service**:
-   ```python
-   # services/exchanges/base.py
-   from .new_exchange import NewExchangeService
-   
-   # Add to register_all_exchanges()
-   exchange_manager.register_exchange(NewExchangeService())
-   ```
-
-### API Response Format
-```json
-{
-  "status": "success|error",
-  "timestamp": "2024-01-01T00:00:00Z",
-  "data": {
-    // Response data
-  }
-}
+├── CHANGELOG.md
+├── LICENSE
+├── Makefile
+├── PROJECT-STRUCTURE.md
+├── QUICKSTART.md
+├── README.md
+├── README_template.md
+├── api
+│   ├── __init__.py
+│   ├── arbitrage.py
+│   ├── dashboard.py
+│   ├── exchanges.py
+│   ├── notifications.py
+│   ├── settings.py
+│   └── websocket.py
+├── app.py
+├── arbitrage-bot.iml
+├── cli.py
+├── config
+│   ├── __init__.py
+│   ├── base.py
+│   ├── development.py
+│   ├── production.py
+│   ├── settings.py
+│   └── testing.py
+├── docker
+│   ├── Dockerfile
+│   ├── docker-compose.prod.yml
+│   ├── docker-compose.yml
+│   └── nginx.conf
+├── docs
+│   ├── api.md
+│   ├── architecture.md
+│   ├── deployment.md
+│   └── development.md
+├── frontend
+│   ├── App.tsx
+│   ├── components
+│   │   ├── Arbitrage
+│   │   │   ├── ExecuteModal.tsx
+│   │   │   ├── FiltersPanel.tsx
+│   │   │   └── OpportunitiesTable.tsx
+│   │   ├── Common
+│   │   │   ├── AppHeader.tsx
+│   │   │   ├── AppSidebar.tsx
+│   │   │   ├── ErrorBoundary.tsx
+│   │   │   ├── Layout.tsx
+│   │   │   ├── LoadingSpinner.tsx
+│   │   │   └── LogoIcon.tsx
+│   │   ├── Dashboard
+│   │   │   ├── ProfitChart.tsx
+│   │   │   ├── RecentTrades.tsx
+│   │   │   ├── StatsCard.tsx
+│   │   │   └── TopTokens.tsx
+│   │   ├── Notifications
+│   │   │   ├── TelegramSettings.tsx
+│   │   │   ├── TemplatesEditor.tsx
+│   │   │   └── TestButton.tsx
+│   │   ├── PnL
+│   │   │   ├── Charts.tsx
+│   │   │   ├── HistoryTable.tsx
+│   │   │   └── StatsPanel.tsx
+│   │   ├── PositionSize
+│   │   │   ├── Calculator.tsx
+│   │   │   ├── InputField.tsx
+│   │   │   └── ResultsCard.tsx
+│   │   └── Settings
+│   │       ├── AddKeyModal.tsx
+│   │       ├── ApiKeysTable.tsx
+│   │       └── ExchangesGrid.tsx
+│   ├── hooks
+│   │   ├── useApi.ts
+│   │   ├── useLocalStorage.ts
+│   │   ├── useNotifications.ts
+│   │   ├── useTheme.ts
+│   │   └── useWebSocket.ts
+│   ├── services
+│   │   ├── api.ts
+│   │   ├── calculations.ts
+│   │   ├── notifications.ts
+│   │   └── websocket.ts
+│   ├── types
+│   │   ├── api.ts
+│   │   ├── components.ts
+│   │   └── index.ts
+│   └── utils
+│       ├── constants.ts
+│       ├── formatters.ts
+│       ├── helpers.ts
+│       └── validators.ts
+├── generate_readme.py
+├── generate_structure.py
+├── instance
+│   └── arbitrage.db
+├── jest.config.js
+├── models
+│   ├── __init__.py
+│   ├── arbitrage_opportunity.py
+│   ├── base.py
+│   ├── exchange.py
+│   ├── trade.py
+│   └── user.py
+├── package-lock.json
+├── package.json
+├── pydoc-markdown.yml
+├── pytest.ini
+├── requirements-dev.txt
+├── requirements.txt
+├── routes
+│   ├── __init__.py
+│   ├── arbitrage.py
+│   ├── networks.py
+│   └── tokens.py
+├── run.py
+├── run.sh
+├── scripts
+│   ├── backup.py
+│   ├── deploy.sh
+│   ├── health_check.py
+│   └── populate_data.py
+├── services
+│   ├── __init__.py
+│   ├── arbitrage.py
+│   ├── exchanges
+│   │   ├── __init__.py
+│   │   ├── base.py
+│   │   ├── binance.py
+│   │   ├── bitget.py
+│   │   ├── bybit.py
+│   │   ├── gateio.py
+│   │   ├── huobi.py
+│   │   ├── kucoin.py
+│   │   ├── mexc.py
+│   │   ├── okx.py
+│   │   └── stub_services.py
+│   ├── notifications.py
+│   └── trading.py
+├── setup.sh
+├── static
+│   ├── css
+│   │   ├── index.css
+│   │   └── style.css
+│   ├── icons
+│   │   ├── binance.svg
+│   │   ├── bitget.svg
+│   │   ├── bybit.svg
+│   │   ├── cryptocom.svg
+│   │   ├── gateio.svg
+│   │   ├── huobi.svg
+│   │   ├── kucoin.svg
+│   │   ├── mexc.svg
+│   │   └── okx.svg
+│   ├── images
+│   │   ├── favicon.ico
+│   │   └── logo.png
+│   └── js
+│       ├── app.js
+│       └── app.min.js
+├── tailwind.config.js
+├── templates
+│   ├── index.html
+│   └── legacy
+│       ├── arbitrage.html
+│       ├── base.html
+│       ├── networks.html
+│       └── tokens.html
+├── tests
+│   ├── conftest.py
+│   ├── integration
+│   │   └── test_services
+│   │       ├── test_binance_integration.py
+│   │       ├── test_bitget_integration.py
+│   │       ├── test_bybit_integration.py
+│   │       ├── test_gateio_integration.py
+│   │       ├── test_huobi_integration.py
+│   │       ├── test_kucoin_integration.py
+│   │       └── test_mexc_integration.py
+│   ├── test_api
+│   │   ├── test_arbitrage.py
+│   │   ├── test_dashboard.py
+│   │   └── test_exchanges.py
+│   ├── test_app.py
+│   ├── test_basic.py
+│   ├── test_frontend
+│   │   ├── components
+│   │   ├── hooks
+│   │   └── services
+│   └── unit
+│       └── test_services
+│           ├── test_binance.py
+│           ├── test_bitget.py
+│           ├── test_bybit.py
+│           ├── test_gateio.py
+│           ├── test_huobi.py
+│           ├── test_kucoin.py
+│           └── test_mexc.py
+├── tsconfig.json
+├── utils
+│   ├── __init__.py
+│   └── helpers.py
+└── wsgi.py
 ```
 
----
+## 📚 API Документація
 
-## 🚀 Production Deployment
+Документація згенерована автоматично з docstrings:
+- [docs/api.md](docs/api.md)
 
-### Docker
-```dockerfile
-FROM python:3.11-slim
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-EXPOSE 5000
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
-```
+## 📌 Changelog
 
-### Environment Setup
-```bash
-# Production settings
-FLASK_ENV=production
-DATABASE_URL=postgresql://user:pass@host/db
-REDIS_URL=redis://localhost:6379
-```
-
----
-
-## 📊 Performance
-
-- **Response Time**: < 100ms for cached data
-- **Throughput**: 1000+ requests/minute
-- **Memory Usage**: ~50MB base + exchange data
-- **Cache Hit Rate**: >95% for trading data
-
----
-
-## 🛡️ Security
-
-- ✅ **Rate limiting** on all API endpoints
-- ✅ **Input validation** and sanitization
-- ✅ **Secure headers** with Flask-Talisman
-- ✅ **API key encryption** in database
-- ✅ **CORS protection** for production
-
----
-
-## 📈 Roadmap
-
-- [ ] WebSocket real-time updates
-- [ ] Advanced trading algorithms
-- [ ] Portfolio management
-- [ ] Mobile application
-- [ ] Machine learning predictions
-- [ ] Advanced risk management
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature/new-feature`
-3. Commit changes: `git commit -am 'Add new feature'`
-4. Push to branch: `git push origin feature/new-feature`
-5. Submit pull request
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
-
----
-
-## 🆘 Support
-
-- **Documentation**: [Wiki](wiki-url)
-- **Issues**: [GitHub Issues](issues-url)
-- **Discussions**: [GitHub Discussions](discussions-url)
-
----
-
-**⚡ Ready to start arbitrage trading? Launch the platform and discover profitable opportunities across cryptocurrency exchanges!**
+Останні зміни та релізи — див. у [CHANGELOG.md](CHANGELOG.md)

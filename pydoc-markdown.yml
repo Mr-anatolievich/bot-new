@@ -1,0 +1,25 @@
+# pydoc-markdown.yml
+modules:
+  - path: .
+    exclude:
+      - venv
+      - __pycache__
+      - tests
+      - .git
+    source: .
+    recursive: true
+
+loader: python
+
+processors:
+  - type: filter
+    skip_empty_modules: true
+    skip_private_modules: true
+    skip_magic_functions: true
+  - type: crossref
+
+renderer:
+  type: markdown
+  render_toc: true
+
+output_path: docs/api.md

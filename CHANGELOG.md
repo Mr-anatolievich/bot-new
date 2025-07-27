@@ -1,3 +1,36 @@
+# 1.0.0 (2025-07-27)
+
+
+### Bug Fixes
+
+* correct variable names for buy and sell exchanges in arbitrage opportunities table ([a16800d](https://github.com/Mr-anatolievich/bot-new/commit/a16800dea428052131ddce8ca9220eae6ee83e96))
+
+
+### Features
+
+* localize application initialization and error handling, enhance Flask setup ([ba98ec9](https://github.com/Mr-anatolievich/bot-new/commit/ba98ec9f7f68757f1e75cd17ac9a572913502f40))
+* refactor project structure into modules and add new services ([cfa5d66](https://github.com/Mr-anatolievich/bot-new/commit/cfa5d668490236a0789ab9458a6250a9047c7d03))
+* update package initialization and add database migration support ([68fa95b](https://github.com/Mr-anatolievich/bot-new/commit/68fa95bc5148bce8975c1e41f12123d57f6628ee))
+
+
+
+
+# 1.0.0 (2025-07-27)
+
+
+### Bug Fixes
+
+* correct variable names for buy and sell exchanges in arbitrage opportunities table ([a16800d](https://github.com/Mr-anatolievich/bot-new/commit/a16800dea428052131ddce8ca9220eae6ee83e96))
+
+
+### Features
+
+* localize application initialization and error handling, enhance Flask setup ([ba98ec9](https://github.com/Mr-anatolievich/bot-new/commit/ba98ec9f7f68757f1e75cd17ac9a572913502f40))
+* refactor project structure into modules and add new services ([cfa5d66](https://github.com/Mr-anatolievich/bot-new/commit/cfa5d668490236a0789ab9458a6250a9047c7d03))
+* update package initialization and add database migration support ([68fa95b](https://github.com/Mr-anatolievich/bot-new/commit/68fa95bc5148bce8975c1e41f12123d57f6628ee))
+
+
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
