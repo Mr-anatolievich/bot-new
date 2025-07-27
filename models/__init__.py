@@ -3,8 +3,6 @@ Database models
 """
 
 from .base import db
-from .trade import Trade
-from .exchange import Exchange
-from .arbitrage_opportunity import ArbitrageOpportunity
+from .trade import Trade, Exchange, ArbitrageOpportunity
 
 __all__ = ['db', 'Trade', 'Exchange', 'ArbitrageOpportunity']

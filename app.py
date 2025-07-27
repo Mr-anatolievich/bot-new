@@ -6,12 +6,19 @@ Modern API-first architecture with React SPA frontend
 
 import os
 import logging
+
+import db
+
+import app
 from flask import Flask, jsonify, send_from_directory, send_file
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_caching import Cache
+
+from flask_migrate import Migrate
+migrate = Migrate(app, db)
 
 # Import configuration
 from config.settings import get_config

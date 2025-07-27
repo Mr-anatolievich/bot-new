@@ -1,9 +1,11 @@
-# Flask core
+    # Flask core
 flask
 flask-cors
 flask-sqlalchemy
 flask-limiter
 flask-caching
+flask-migrate
+alembic
 
 # Exchange APIs
 python-binance
