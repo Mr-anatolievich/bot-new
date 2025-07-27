@@ -1,41 +1,18 @@
-"""
-Pytest configuration and fixtures
-"""
-
-import pytest
-import tempfile
+import sys
 import os
-from app import create_app
-from models import db
+import pytest
+from flask import Flask
 
+# Додаємо корінь проєкту в PYTHONPATH
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-@pytest.fixture
-def app():
-    """Create application for testing"""
-    # Create a temporary file for the test database
-    db_fd, db_path = tempfile.mkstemp()
-
-    app = create_app('testing')
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
-    app.config['TESTING'] = True
-
-    with app.app_context():
-        db.create_all()
-        yield app
-        db.drop_all()
-
-    # Clean up
-    os.close(db_fd)
-    os.unlink(db_path)
-
+from app import create_app  # Тепер працює правильно
 
 @pytest.fixture
-def client(app):
-    """Test client"""
+def app() -> Flask:
+    flask_app = create_app()
+    return flask_app
+
+@pytest.fixture
+def client(app: Flask):
     return app.test_client()
-
-
-@pytest.fixture
-def runner(app):
-    """Test CLI runner"""
-    return app.test_cli_runner()
