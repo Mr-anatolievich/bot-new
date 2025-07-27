@@ -1,1 +1,40 @@
-/.env
+# Environments
+.env
+.venv
+venv/
+env/
+
+# IDE configuration
+.idea/
+*.iml
+.DS_Store
+/workspace.xml
+/httpRequests/
+
+# Local database
+*.db
+*.sqlite3
+instance/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+htmlcov/
+.pytest_cache/
+.coverage
+
+# Logs
+logs/
+*.log
+
+# Backups
+*.sql
+*.bak
+backup_*.sql
